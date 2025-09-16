@@ -2,62 +2,7 @@
 
 ## Архитектура системы через год
 
-```mermaid
-C4Container
-UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="3")
-title Архитектура системы "Будущее 2.0" через год
-
-Enterprise_Boundary(company, "Компания Будущее 2.0") {
-    System_Boundary(newDWH, "Современный DWH и Витрина данных") {
-        Container(dataMart, "Витрина данных / Портал самообслуживания", "BI-платформа (Power BI, Tableau, Looker или собственное решение)", "Пользователи могут самостоятельно строить отчёты с контролем доступа")
-        Container(dwhModern, "Современный DWH", "Cloud DWH (Snowflake, Azure Synapse, Redshift)", "Оптимизированный DWH без бизнес-логики, хранит данные по всем бизнес-доменам, кроме мед. карт и исследований")
-        Container(dataLake, "Data Lake", "Облачное хранилище (например, Azure Data Lake, S3)", "Хранит сырые и интегрированные данные из всех источников")
-        Container(dataIntegration, "Система интеграции и CDC", "Kafka / Apache Camel / ETL / ELT", "Служит для интеграции данных из разных бизнесов и потоков в DWH и Data Lake")
-    }
-
-    System_Boundary(medTechDomain, "Медицинские и ИИ-сервисы") {
-        Container(medicalDB, "Хранилище медицинских данных", "Специализированное хранилище", "Медкарты, истории болезней (не подлежат аналитике в витрине данных)")
-        Container(medicalDataServices, "ИИ-сервисы и анализ медицинских данных", "Python / ML-сервисы", "Обрабатывает медицинские данные, не используемые в аналитике DWH")
-    }
-
-
-    System_Boundary(legacyDWH, "Legacy DWH (SQL Server 2008)") {
-        Container(legacyPowerBI, "BI-система (Power BI + кастомизация)", "Power BI / Power Builder", "Сформирована на базе старых данных, медленная и сложно масштабируемая")
-        Container(legacyDB, "Реляционная база данных", "MS SQL Server 2008", "Хранит исторические данные компании")
-    }
-
-
-    System_Boundary(fintechDomain, "Финтех-сервисы") {
-        Container(fintechBackend, "Финтех бэкенд", "Java / Golang", "Обрабатывает финансовые транзакции и услуги")
-        Container(fintechDB, "Финтех база данных", "Реляционная / NoSQL", "Хранит финансовую историю, кредиты, счета")
-    }
-
-
-    System_Boundary(integrationLayer, "Интеграционный слой") {
-        Container(integrationBus, "Интеграционная шина данных", "Apache Camel / Kafka", "Обеспечивает обмен данными между доменами и системами")
-    }
-
-
-    Person(businessUser, "Бизнес-пользователь", "Сотрудник компании, использующий витрину данных для аналитики")
-    Person(operator, "Оператор клиники", "Работает с медицинскими данными в своей системе")
-}
-
-Rel(operator, legacyPowerBI, "Работает с легаси-интерфейсом")
-Rel(operator, medicalDataServices, "Использует для мед. данных и ИИ анализа")
-Rel(operator, medicalDB, "Ввод и обновление медицинских данных")
-
-Rel(fintechBackend, integrationBus, "Отправляет и получает данные")
-Rel(medicalDataServices, integrationBus, "Обменивается данными")
-
-Rel(integrationBus, dataIntegration, "Передаёт данные между системами")
-Rel(dataIntegration, dataLake, "Загружает данные")
-Rel(dataLake, dwhModern, "Забирает подготовленные данные")
-Rel(dwhModern, dataMart, "Подаёт данные витрине")
-
-Rel(businessUser, dataMart, "Самостоятельно строит отчёты")
-Rel(businessUser, fintechBackend, "Использует по необходимости финансовые данные")
-
-```
+![](./c4.svg)
 
 ## Проблемные места
 
